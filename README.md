@@ -2,7 +2,7 @@
 
 Documentación técnica completa de la plantilla XLSForm Advanced (v3.25) para ArcGIS Survey123 Connect.
 
-**→ [Ver manual en línea](https://tu-usuario.github.io/survey123-xlsform-manual)**
+**→ [Ver manual en línea](https://adeltor11.github.io/survey123-xlsform-manual)**
 
 ---
 
