@@ -27,7 +27,7 @@ Cubre cada columna, tipo de pregunta y función de lógica de la plantilla Advan
 Este repositorio contiene un sitio estático. Se puede navegar directamente en GitHub Pages o clonar para uso local.
 
 ```bash
-git clone https://github.com/tu-usuario/survey123-xlsform-manual.git
+git clone https://github.com/adeltor11/survey123-xlsform-manual.git
 cd survey123-xlsform-manual
 # Abrir index.html en el navegador
 ```
