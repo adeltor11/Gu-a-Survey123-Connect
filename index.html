@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual XLSForm — ArcGIS Survey123 Connect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --border: #e2ddd8;
+    --border-strong: #c8c0b8;
+    --text: #1a1814;
+    --text-mid: #5c5650;
+    --text-light: #9c9690;
+    --accent: #2d5a3d;
+    --accent-light: #e8f0ea;
+    --accent-mid: #4a7c5e;
+    --code-bg: #f0ede8;
+    --warn-bg: #fdf6e3;
+    --warn-border: #d4aa60;
+    --tip-bg: #f0f5f1;
+    --tip-border: #5a8a6a;
+    --nav-w: 260px;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+    --font-sans: 'Geist', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  #nav {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--nav-w);
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #nav::-webkit-scrollbar { width: 3px; }
+  #nav::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+  .nav-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+
+  .nav-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.35;
+    color: var(--text);
+  }
+
+  .nav-version {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-light);
+  }
+
+  nav ul { list-style: none; padding: 12px 0 24px; }
+
+  nav ul li a {
+    display: block;
+    padding: 5px 24px;
+    font-size: 13px;
+    color: var(--text-mid);
+    text-decoration: none;
+    font-weight: 400;
+    line-height: 1.5;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  nav ul li a:hover {
+    color: var(--accent);
+    background: var(--accent-light);
+    border-left-color: var(--accent);
+  }
+
+  nav ul li a.active {
+    color: var(--accent);
+    font-weight: 500;
+    border-left-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  nav ul li.section-divider {
+    padding: 14px 24px 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+  }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--nav-w);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    padding: 80px 72px 64px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 320px; height: 100%;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 24px,
+      var(--border) 24px,
+      var(--border) 25px
+    );
+    opacity: 0.35;
+  }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  #hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  #hero h1 em {
+    font-style: italic;
+    color: var(--accent-mid);
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text-mid);
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+
+  .hero-pill span { color: var(--accent); }
+
+  /* ── CONTENT ── */
+  #content { padding: 0 72px 80px; max-width: 900px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding-top: 64px;
+    border-top: 1px solid var(--border);
+    margin-top: 64px;
+  }
+
+  .section:first-child { border-top: none; margin-top: 0; padding-top: 56px; }
+
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 10px;
+  }
+
+  .section > h2 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    margin: 36px 0 12px;
+    text-transform: uppercase;
+  }
+
+  h4 {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin: 24px 0 8px;
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── TABLA ── */
+  .tbl-wrap { overflow-x: auto; margin: 20px 0; border: 1px solid var(--border); border-radius: 3px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--text);
+    color: #fff;
+  }
+
+  thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: var(--bg); }
+  tbody tr:hover { background: var(--accent-light); }
+
+  td {
+    padding: 9px 14px;
+    vertical-align: top;
+    line-height: 1.55;
+  }
+
+  td:first-child {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* ── CODE ── */
+  code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: var(--accent);
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 2px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    display: flex;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 2px;
+    margin: 20px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .callout.warn {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-left: 3px solid var(--warn-border);
+  }
+
+  .callout.tip {
+    background: var(--tip-bg);
+    border: 1px solid var(--tip-border);
+    border-left: 3px solid var(--tip-border);
+  }
+
+  .callout.info {
+    background: var(--accent-light);
+    border: 1px solid var(--tip-border);
+    border-left: 3px solid var(--accent);
+  }
+
+  .callout strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  /* ── LISTA ── */
+  ul.doc-list, ol.doc-list {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+
+  ul.doc-list li, ol.doc-list li {
+    margin-bottom: 6px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  ul.doc-list li::marker { color: var(--accent); }
+
+  /* ── PASOS ── */
+  .steps { counter-reset: steps; margin: 24px 0; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0 20px;
+    margin-bottom: 24px;
+    counter-increment: steps;
+  }
+
+  .step-num {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-body h4 { margin-top: 0; margin-bottom: 6px; font-size: 14px; }
+  .step-body p { font-size: 13.5px; color: var(--text-mid); margin: 0; }
+
+  /* ── FORMULA ── */
+  .formula {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-mid);
+    padding: 12px 18px;
+    border-radius: 2px;
+    margin: 12px 0;
+    color: var(--accent);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* ── GLOSARIO ── */
+  .glosario-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0 24px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+
+  .glosario-item:last-child { border-bottom: none; }
+
+  .glosario-term {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+
+  /* ── FOOTER ── */
+  #footer {
+    margin-left: var(--nav-w);
+    border-top: 1px solid var(--border);
+    padding: 28px 72px;
+    background: var(--surface);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  #footer p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  /* ── MOBILE ── */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 16px; left: 16px;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    color: var(--text);
+  }
+
+  @media (max-width: 860px) {
+    #nav { transform: translateX(-100%); transition: transform 0.25s ease; }
+    #nav.open { transform: translateX(0); }
+    #main, #footer { margin-left: 0; }
+    #content { padding: 0 24px 60px; }
+    #hero { padding: 60px 24px 48px; }
+    .menu-toggle { display: block; }
+    .glosario-item { grid-template-columns: 1fr; gap: 4px; }
+    #footer { padding: 24px; }
+  }
+
+  /* ── SCROLL HIGHLIGHT ── */
+  .highlight-row { background: var(--accent-light) !important; }
+
+  /* ── TAG TIPO ── */
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tag.field { background: #e8f0fe; color: #1a4fba; }
+  .tag.survey { background: var(--accent-light); color: var(--accent); }
+  .tag.choices { background: #fce8e6; color: #a33; }
+  .tag.settings { background: #fdf6e3; color: #8a6000; }
+  .tag.oculto { background: #f0ede8; color: #666; }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" onclick="document.getElementById('nav').classList.toggle('open')">☰ Menú</button>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<div id="nav">
+  <div class="nav-header">
+    <div class="nav-label">Documentación técnica</div>
+    <div class="nav-title">Manual XLSForm<br>Survey123 Connect</div>
+    <div class="nav-version">Template v3.25 — Esri Advanced</div>
+  </div>
+  <nav>
+    <ul>
+      <li class="section-divider">Introducción</li>
+      <li><a href="#intro">¿Qué es esta plantilla?</a></li>
+      <li><a href="#estructura">Estructura del archivo</a></li>
+
+      <li class="section-divider">Hoja survey</li>
+      <li><a href="#col-type">type — Tipos de pregunta</a></li>
+      <li><a href="#col-name">name</a></li>
+      <li><a href="#col-label">label · hint</a></li>
+      <li><a href="#col-appearance">appearance</a></li>
+      <li><a href="#col-required">required · readonly</a></li>
+      <li><a href="#col-default">default</a></li>
+      <li><a href="#col-calculation">calculation</a></li>
+      <li><a href="#col-constraint">constraint</a></li>
+      <li><a href="#col-relevant">relevant</a></li>
+      <li><a href="#col-choice_filter">choice_filter</a></li>
+      <li><a href="#col-repeat_count">repeat_count</a></li>
+      <li><a href="#col-bind">Columnas bind::</a></li>
+      <li><a href="#col-body">Columnas body::</a></li>
+      <li><a href="#col-idioma">Columnas de idioma</a></li>
+
+      <li class="section-divider">Hojas del formulario</li>
+      <li><a href="#choices">choices</a></li>
+      <li><a href="#settings">settings</a></li>
+
+      <li class="section-divider">Lógica avanzada</li>
+      <li><a href="#grupos">Grupos y repeats</a></li>
+      <li><a href="#xpath">XPath y pulldata()</a></li>
+      <li><a href="#html">HTML en labels</a></li>
+
+      <li class="section-divider">Referencia</li>
+      <li><a href="#flujo">Flujo de trabajo</a></li>
+      <li><a href="#errores">Errores comunes</a></li>
+      <li><a href="#ejemplo">Ejemplo práctico</a></li>
+      <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+      <li><a href="#glosario">Glosario</a></li>
+    </ul>
+  </nav>
+</div>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div id="main">
+
+  <!-- HERO -->
+  <div id="hero">
+    <div class="hero-tag">ArcGIS Survey123 Connect · XLSForm v3.25</div>
+    <h1>Manual de uso<br><em>Plantilla XLSForm Avanzada</em></h1>
+    <p class="hero-sub">Guía completa para crear, configurar y publicar formularios de captura de datos en campo. Cubre cada columna, cada tipo de pregunta y la lógica de validación de la plantilla Advanced incluida en Survey123 Connect.</p>
+    <div class="hero-meta">
+      <span class="hero-pill"><span>Versión</span> Template 3.25</span>
+      <span class="hero-pill"><span>App</span> Survey123 Field App + Web App</span>
+      <span class="hero-pill"><span>Contexto</span> EDECA · UNA · Costa Rica</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- ═══ 1. INTRO ═══ -->
+    <div class="section" id="intro">
+      <div class="section-num">01 · Introducción</div>
+      <h2>¿Qué es esta plantilla y para qué sirve?</h2>
+      <p>Esta plantilla es un archivo Excel (.xlsx / .xlsm) que actúa como el lenguaje con el que <strong>ArcGIS Survey123 Connect</strong> construye formularios digitales de captura de datos. El formato que usa se llama <strong>XLSForm</strong>, un estándar abierto desarrollado por Open Data Kit (ODK) y adoptado por Esri para Survey123.</p>
+      <p>Cada fila que se agrega en la hoja <code>survey</code> es una pregunta, un campo de datos o una instrucción de comportamiento. Survey123 Connect lee ese archivo y lo convierte en un formulario interactivo que se instala en dispositivos móviles (Android, iOS) o funciona desde el navegador.</p>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ</span>
+        <div><strong>Versión de la plantilla</strong> Esta documentación corresponde a la versión <strong>Advanced 3.25</strong>. Es la versión completa que incluye todas las funciones soportadas, tanto en la Field App como en la Web App.</div>
+      </div>
+
+      <h3>¿Por qué usar Survey123 en lugar de papel?</h3>
+      <ul class="doc-list">
+        <li>Captura de coordenadas GPS precisas directamente desde el dispositivo o receptor externo (Trimble TDC6, etc.).</li>
+        <li>Validación automática de datos en el momento de la medición: el formulario rechaza valores fuera de rango.</li>
+        <li>Cálculos automáticos en tiempo real: área basal, biomasa, factor de forma, directamente en campo.</li>
+        <li>Sincronización directa con ArcGIS Online, Feature Services y bases de datos PostgreSQL/PostGIS.</li>
+        <li>Eliminación de errores de transcripción al digitalizar datos de papel.</li>
+        <li>Adjuntar fotografías, audio y archivos directamente a cada registro georreferenciado.</li>
+      </ul>
+    </div>
+
+    <!-- ═══ 2. ESTRUCTURA ═══ -->
+    <div class="section" id="estructura">
+      <div class="section-num">02 · Estructura</div>
+      <h2>Las hojas del archivo</h2>
+      <p>El archivo contiene varias hojas (pestañas). Tres se editan para construir el formulario; las demás son referencia de solo lectura.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Hoja</th><th>¿Se edita?</th><th>Propósito</th></tr></thead>
+          <tbody>
+            <tr><td>survey</td><td><span class="tag survey">Sí</span></td><td>Hoja principal. Cada fila es una pregunta, sección o cálculo del formulario.</td></tr>
+            <tr><td>choices</td><td><span class="tag choices">Sí</span></td><td>Listas de opciones para preguntas select_one y select_multiple.</td></tr>
+            <tr><td>settings</td><td><span class="tag settings">Sí</span></td><td>Título, ID, idioma, versión y estilo de navegación del formulario.</td></tr>
+            <tr><td>Version</td><td><span class="tag oculto">No</span></td><td>Información de la versión de la plantilla. Solo lectura.</td></tr>
+            <tr><td>Question types</td><td><span class="tag oculto">No</span></td><td>Catálogo completo de tipos de preguntas disponibles.</td></tr>
+            <tr><td>Appearances</td><td><span class="tag oculto">No</span></td><td>Catálogo de apariencias visuales y compatibilidad Field/Web App.</td></tr>
+            <tr><td>Field types</td><td><span class="tag oculto">No</span></td><td>Tipos de campos de la geodatabase de Esri y tipos XLSForm.</td></tr>
+            <tr><td>Reference</td><td><span class="tag oculto">No</span></td><td>Operadores, funciones XPath, HTML permitido y expresiones regulares.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠</span>
+        <div><strong>Regla fundamental</strong> Los nombres de las columnas no se pueden renombrar ni reordenar. Survey123 las lee por nombre exacto. Las columnas que no se necesiten simplemente se dejan en blanco.</div>
+      </div>
+    </div>
+
+    <!-- ═══ 3. TYPE ═══ -->
+    <div class="section" id="col-type">
+      <div class="section-num">03 · Hoja survey</div>
+      <h2>Columna <code>type</code></h2>
+      <p>Es la columna más importante. Define qué tipo de pregunta o elemento se está creando. Survey123 construye toda la interfaz visual a partir de este valor.</p>
+
+      <h3>Tipos de pregunta</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>type</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>text</td><td>Respuesta de texto libre. Para nombres, observaciones, códigos alfanuméricos.</td></tr>
+            <tr><td>integer</td><td>Número entero (sin decimales). Conteos, cantidades discretas, número de árboles.</td></tr>
+            <tr><td>decimal</td><td>Número con decimales. Medidas continuas: DAP (cm), altura (m), área basal (m²).</td></tr>
+            <tr><td>date</td><td>Selector de fecha. Almacena año, mes y día.</td></tr>
+            <tr><td>time</td><td>Selector de hora.</td></tr>
+            <tr><td>dateTime</td><td>Fecha y hora combinados. Para registros de levantamiento completo.</td></tr>
+            <tr><td>select_one [lista]</td><td>Selección única. Reemplazar <code>[lista]</code> con el nombre de la lista en <em>choices</em>. Ej: <code>select_one especie</code></td></tr>
+            <tr><td>select_multiple [lista]</td><td>Selección múltiple. El usuario puede marcar varias opciones.</td></tr>
+            <tr><td>select_one_from_file archivo.csv</td><td>Selección única desde un CSV externo en la carpeta <em>media</em>.</td></tr>
+            <tr><td>select_multiple_from_file archivo.csv</td><td>Selección múltiple desde un CSV externo.</td></tr>
+            <tr><td>rank [lista]</td><td>Ordenamiento de opciones por prioridad.</td></tr>
+            <tr><td>range</td><td>Deslizador numérico dentro de un rango. Se configura con los parámetros <code>start</code>, <code>end</code>, <code>step</code>.</td></tr>
+            <tr><td>note</td><td>Muestra texto informativo. No captura datos. Ideal para instrucciones de protocolo.</td></tr>
+            <tr><td>geopoint</td><td>Captura un punto geográfico (lat, lon, altitud). El más usado en levantamientos forestales.</td></tr>
+            <tr><td>geotrace</td><td>Captura una línea. Para linderos, transectos o rutas.</td></tr>
+            <tr><td>geoshape</td><td>Captura un polígono. Para delimitar parcelas o áreas de muestreo.</td></tr>
+            <tr><td>image</td><td>Fotografía o imagen adjunta.</td></tr>
+            <tr><td>audio</td><td>Grabación de audio o archivo adjunto.</td></tr>
+            <tr><td>file</td><td>Cualquier tipo de archivo. El tipo se controla con <code>body::accept</code>.</td></tr>
+            <tr><td>barcode</td><td>Escaneo de código de barras o QR. Útil para plaquetas o etiquetas de árboles.</td></tr>
+            <tr><td>begin group / end group</td><td>Marca el inicio y fin de un grupo temático de preguntas.</td></tr>
+            <tr><td>begin repeat / end repeat</td><td>Bloque de preguntas que se repite N veces. Esencial para registrar múltiples árboles por parcela.</td></tr>
+            <tr><td>calculate</td><td>Campo oculto para cálculos. Ejecuta una expresión XPath. No visible para el usuario.</td></tr>
+            <tr><td>hidden</td><td>Campo no visible que se almacena en la base de datos.</td></tr>
+            <tr><td>username</td><td>Se llena automáticamente con el usuario ArcGIS. Oculto.</td></tr>
+            <tr><td>email</td><td>Se llena automáticamente con el correo ArcGIS. Oculto.</td></tr>
+            <tr><td>start</td><td>Fecha y hora de inicio del formulario. Oculto, automático.</td></tr>
+            <tr><td>end</td><td>Fecha y hora de finalización. Oculto, automático.</td></tr>
+            <tr><td>deviceid</td><td>UUID único del dispositivo. Oculto. No disponible en Web App.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ NAME ═══ -->
+    <div class="section" id="col-name">
+      <h2>Columna <code>name</code></h2>
+      <p>Es el nombre interno del campo, equivalente al nombre de columna en la tabla de datos del Feature Layer. Funciona como el nombre de una variable en programación.</p>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠</span>
+        <div><strong>Reglas obligatorias</strong> Solo letras minúsculas, números y guion bajo (<code>_</code>). Sin espacios, sin tildes, sin caracteres especiales. No puede comenzar con número. Debe ser único en todo el formulario. Máximo recomendado: 10 caracteres si se conecta a geodatabases heredadas.</div>
+      </div>
+
+      <h4>Ejemplos para inventario forestal</h4>
+      <ul class="doc-list">
+        <li><code>parcela_id</code> — Identificador de la parcela</li>
+        <li><code>dap_cm</code> — Diámetro a la Altura del Pecho en centímetros</li>
+        <li><code>altura_m</code> — Altura total del árbol en metros</li>
+        <li><code>especie</code> — Selección de especie forestal</li>
+        <li><code>ubicacion</code> — Campo geopoint</li>
+        <li><code>foto_arbol</code> — Imagen del árbol</li>
+      </ul>
+    </div>
+
+    <!-- ═══ LABEL / HINT ═══ -->
+    <div class="section" id="col-label">
+      <h2>Columnas <code>label</code>, <code>hint</code> y <code>guidance_hint</code></h2>
+
+      <h3>label</h3>
+      <p>Texto visible que el usuario ve como título de la pregunta. Acepta cualquier carácter, incluyendo tildes, espacios, emojis y etiquetas HTML básicas.</p>
+      <div class="callout tip">
+        <span class="callout-icon">→</span>
+        <div><strong>Buena práctica</strong> Incluir la unidad de medida en el label. Si el <code>name</code> es <code>dap_cm</code>, el label debería ser: <em>Diámetro a la Altura del Pecho — DAP (cm)</em></div>
+      </div>
+
+      <h3>hint</h3>
+      <p>Texto de ayuda que aparece debajo del label. Sirve para instrucciones de protocolo de medición. Ejemplo: <em>"Medir a 1.30 m desde la base del árbol. Si hay contrafuertes, medir por encima de estos."</em></p>
+
+      <h3>guidance_hint</h3>
+      <p>Texto extendido que se despliega solo cuando el usuario toca un ícono de información adicional. Ideal para protocolos técnicos detallados que no deben ocupar espacio permanente en pantalla.</p>
+    </div>
+
+    <!-- ═══ APPEARANCE ═══ -->
+    <div class="section" id="col-appearance">
+      <h2>Columna <code>appearance</code></h2>
+      <p>Controla la presentación visual del elemento. El mismo tipo de pregunta puede verse y comportarse de forma muy distinta dependiendo de la apariencia configurada.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Appearance</th><th>Se aplica a</th><th>Efecto</th><th>Field App</th><th>Web App</th></tr></thead>
+          <tbody>
+            <tr><td>minimal</td><td>select_one, select_multiple</td><td>Menú desplegable compacto. Ahorra espacio en pantalla.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>compact</td><td>select_one, select_multiple, groups</td><td>Opciones horizontales. Usar <code>compact-2</code>, <code>compact-3</code> para indicar columnas.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>horizontal</td><td>select_one, select_multiple</td><td>Opciones distribuidas en columnas de igual ancho.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>autocomplete</td><td>select_one</td><td>Lista con búsqueda por texto. Ideal para catálogos largos de especies.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>likert</td><td>select_one</td><td>Escala Likert visual.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>spinner</td><td>integer, decimal</td><td>Botones + y − para incrementar o decrementar. Útil para conteos.</td><td>✓</td><td>—</td></tr>
+            <tr><td>numbers</td><td>integer, decimal</td><td>Teclado numérico en pantalla completa.</td><td>✓</td><td>—</td></tr>
+            <tr><td>calculator</td><td>integer, decimal</td><td>Calculadora completa.</td><td>✓</td><td>—</td></tr>
+            <tr><td>multiline</td><td>text</td><td>Caja de texto de múltiples líneas para observaciones largas.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>draw</td><td>image</td><td>Lienzo en blanco para croquis o dibujos.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>annotate</td><td>image</td><td>Anotaciones sobre una foto tomada.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>signature</td><td>image</td><td>Captura de firma digital.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>press-to-locate</td><td>geopoint, geotrace, geoshape</td><td>La ubicación solo se registra cuando el usuario presiona activamente el botón. Mayor precisión.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>hide-input</td><td>geopoint</td><td>Oculta el panel de coordenadas manuales en la Web App.</td><td>—</td><td>✓</td></tr>
+            <tr><td>field-list</td><td>begin group, begin repeat</td><td>Con <code>style = pages</code>, muestra el grupo como una página separada.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>table-list</td><td>begin group</td><td>Preguntas select_one con la misma lista en formato de tabla compacta.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>hidden</td><td>Todos los tipos</td><td>Oculta el elemento. El valor aún se guarda en la base de datos.</td><td>✓</td><td>✓</td></tr>
+            <tr><td>rangefinder</td><td>text, integer, decimal</td><td>Recibe medidas de un telémetro láser externo.</td><td>✓</td><td>—</td></tr>
+            <tr><td>year / month-year</td><td>date</td><td>Selector de solo año o mes-año.</td><td>✓</td><td>✓ / —</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ REQUIRED / READONLY ═══ -->
+    <div class="section" id="col-required">
+      <h2>Columnas <code>required</code>, <code>required_message</code> y <code>readonly</code></h2>
+
+      <h3>required</h3>
+      <p>Si se coloca <code>yes</code>, el formulario no permite avanzar ni enviar sin que el campo tenga un valor.</p>
+      <ul class="doc-list">
+        <li><code>yes</code> o <code>true</code> — Campo obligatorio</li>
+        <li><code>no</code> o <code>false</code> — Campo opcional (por defecto)</li>
+        <li>Expresión XPath — Obligatorio condicionalmente: <code>${dap_cm} > 0</code></li>
+      </ul>
+
+      <h3>required_message</h3>
+      <p>Mensaje personalizado cuando el usuario intenta enviar sin completar un campo obligatorio. Si se deja vacío, Survey123 muestra un mensaje genérico en inglés.</p>
+
+      <h3>readonly</h3>
+      <p>Hace el campo visible pero no editable. Se usa principalmente para mostrar resultados de cálculos en pantalla. Valores: <code>yes</code> / <code>no</code>.</p>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠</span>
+        <div><strong>Importante</strong> En inventarios forestales, campos como especie, DAP y geopoint deben marcarse como <code>required = yes</code> para garantizar la calidad del dato capturado.</div>
+      </div>
+    </div>
+
+    <!-- ═══ DEFAULT ═══ -->
+    <div class="section" id="col-default">
+      <h2>Columna <code>default</code></h2>
+      <p>Valor que se pre-carga automáticamente al abrir el formulario. El usuario puede modificarlo.</p>
+      <ul class="doc-list">
+        <li><code>today()</code> — Fecha actual (campos <code>date</code>)</li>
+        <li><code>now()</code> — Fecha y hora actuales (campos <code>dateTime</code> / <code>time</code>)</li>
+        <li>Un valor fijo de texto o número</li>
+        <li>Referencia a otro campo: <code>${nombre_finca}</code></li>
+        <li>Para <code>select_multiple</code>: valores separados por coma: <code>item1,item2</code></li>
+      </ul>
+    </div>
+
+    <!-- ═══ CALCULATION ═══ -->
+    <div class="section" id="col-calculation">
+      <h2>Columna <code>calculation</code></h2>
+      <p>La columna de fórmulas. Se usa junto con el tipo <code>calculate</code> para ejecutar operaciones matemáticas o lógicas. El resultado se guarda en la base de datos y puede mostrarse en pantalla si se combina con <code>readonly = yes</code>.</p>
+
+      <h3>Operadores XPath</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Operador</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td>+</td><td>Suma</td><td><code>${altura_m} + ${altura_fuste}</code></td></tr>
+            <tr><td>-</td><td>Resta</td><td><code>${altura_total} - ${altura_fuste}</code></td></tr>
+            <tr><td>*</td><td>Multiplicación</td><td><code>${dap_cm} * ${dap_cm}</code></td></tr>
+            <tr><td>div</td><td>División</td><td><code>${peso_kg} div ${volumen_m3}</code></td></tr>
+            <tr><td>mod</td><td>Módulo (resto)</td><td><code>${numero} mod 2</code></td></tr>
+            <tr><td>=</td><td>Igual</td><td><code>${especie} = 'teca'</code></td></tr>
+            <tr><td>!=</td><td>Diferente</td><td><code>${estado} != 'muerto'</code></td></tr>
+            <tr><td>&lt; / &lt;=</td><td>Menor / Menor o igual</td><td><code>${dap_cm} &lt; 10</code></td></tr>
+            <tr><td>&gt; / &gt;=</td><td>Mayor / Mayor o igual</td><td><code>${dap_cm} &gt; 30</code></td></tr>
+            <tr><td>or / and</td><td>Disyunción / Conjunción</td><td><code>${dap_cm} &gt; 5 and ${dap_cm} &lt; 300</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Funciones útiles</h3>
+      <ul class="doc-list">
+        <li><code>if(condición, valor_verdad, valor_falso)</code> — Condicional simple</li>
+        <li><code>round(expresión, decimales)</code> — Redondeo: <code>round(${ab_m2}, 4)</code></li>
+        <li><code>concat(${campo1}, ' - ', ${campo2})</code> — Concatenar textos</li>
+        <li><code>string-length(${campo})</code> — Longitud de un texto</li>
+        <li><code>format-number(${valor}, '#.##')</code> — Dar formato numérico</li>
+        <li><code>today()</code> / <code>now()</code> — Fecha y hora actuales</li>
+        <li><code>pulldata('archivo', 'campo', 'clave', ${ref})</code> — Leer desde CSV externo</li>
+      </ul>
+
+      <h4>Ejemplo: área basal por árbol</h4>
+      <div class="formula">3.14159265 * (${dap_cm} div 100 div 2) * (${dap_cm} div 100 div 2)</div>
+      <p>El resultado es el área basal en m². Para mostrarlo en pantalla: <code>appearance</code> vacío + <code>readonly = yes</code>.</p>
+    </div>
+
+    <!-- ═══ CONSTRAINT ═══ -->
+    <div class="section" id="col-constraint">
+      <h2>Columnas <code>constraint</code> y <code>constraint_message</code></h2>
+      <p>Define una regla de validación. Si el valor ingresado no cumple la expresión, el formulario muestra un error y bloquea el envío. Es la herramienta principal de control de calidad de datos en campo.</p>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ</span>
+        <div>El punto (<code>.</code>) en una expresión constraint hace referencia al valor actual del campo que se está validando.</div>
+      </div>
+
+      <h4>Ejemplos para inventario forestal</h4>
+      <ul class="doc-list">
+        <li><code>. >= 5 and . &lt;= 300</code> — DAP válido entre 5 y 300 cm</li>
+        <li><code>. >= 1 and . &lt;= 80</code> — Altura total entre 1 y 80 metros</li>
+        <li><code>. > 0</code> — El valor debe ser positivo</li>
+        <li><code>regex(., '^[A-Z]{2}-[0-9]{4}$')</code> — Código con formato <em>AB-1234</em></li>
+        <li><code>string-length(.) &lt;= 100</code> — Texto de máximo 100 caracteres</li>
+      </ul>
+
+      <p><code>constraint_message</code>: mensaje personalizado cuando no se cumple la regla. Si se deja vacío, Survey123 muestra un texto genérico en inglés.</p>
+    </div>
+
+    <!-- ═══ RELEVANT ═══ -->
+    <div class="section" id="col-relevant">
+      <h2>Columna <code>relevant</code></h2>
+      <p>Controla la visibilidad condicional. Si la expresión es verdadera, la pregunta se muestra. Si es falsa, se oculta y su valor no se envía. Permite crear formularios dinámicos e inteligentes.</p>
+
+      <h4>Ejemplos</h4>
+      <ul class="doc-list">
+        <li><code>${dap_cm} > 0</code> — Muestra campos de biomasa solo si se midió el DAP</li>
+        <li><code>${estado_arbol} = 'vivo'</code> — Campos fitosanitarios solo para árboles vivos</li>
+        <li><code>${tiene_dano} = 'yes'</code> — Sub-campos de daño solo si se marcó que hay daño</li>
+        <li><code>${tipo_medicion} = 'parcela'</code> — Campos de parcela solo en ese modo</li>
+      </ul>
+
+      <div class="callout tip">
+        <span class="callout-icon">→</span>
+        <div>El uso inteligente de <code>relevant</code> hace el formulario más corto y amigable para el dasónomo en campo, mostrando solo lo que es pertinente según las respuestas anteriores.</div>
+      </div>
+    </div>
+
+    <!-- ═══ CHOICE_FILTER ═══ -->
+    <div class="section" id="col-choice_filter">
+      <h2>Columna <code>choice_filter</code></h2>
+      <p>Filtra la lista de opciones de un <code>select_one</code> o <code>select_multiple</code> basándose en atributos adicionales definidos en la hoja <code>choices</code>. Habilita los <strong>selectores en cascada</strong>.</p>
+
+      <h4>Ejemplo forestal</h4>
+      <ul class="doc-list">
+        <li>Primera pregunta: selección de <strong>Género</strong> (<em>Tectona</em>, <em>Pinus</em>, <em>Cedrela</em>...)</li>
+        <li>Segunda pregunta: selección de <strong>Especie</strong>, filtrada por el género elegido</li>
+        <li>La expresión en <code>choice_filter</code>: <code>genero = ${genero_elegido}</code></li>
+        <li>En la hoja choices se agrega una columna <code>genero</code> con el valor correspondiente para cada especie</li>
+      </ul>
+    </div>
+
+    <!-- ═══ REPEAT_COUNT ═══ -->
+    <div class="section" id="col-repeat_count">
+      <h2>Columna <code>repeat_count</code></h2>
+      <p>Define el número de repeticiones de un bloque <code>begin repeat</code>. Si se deja vacío, el usuario agrega repeticiones manualmente. Si se coloca un número o expresión, el formulario crea ese número de bloques automáticamente.</p>
+      <ul class="doc-list">
+        <li>Vacío — El usuario agrega y elimina repeticiones con botones</li>
+        <li><code>10</code> — Exactamente 10 repeticiones fijas</li>
+        <li><code>${num_arboles}</code> — El número depende de una respuesta anterior</li>
+      </ul>
+    </div>
+
+    <!-- ═══ BIND ═══ -->
+    <div class="section" id="col-bind">
+      <h2>Columnas <code>bind::</code></h2>
+      <p>Las columnas con prefijo <code>bind::</code> conectan la pregunta con el esquema de almacenamiento del Feature Layer.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>bind::type</td><td>Sobreescribe el tipo de dato XLSForm. Valores: <code>int</code>, <code>decimal</code>, <code>string</code>, <code>date</code>, <code>dateTime</code>, <code>time</code>.</td></tr>
+            <tr><td>bind::esri:fieldType</td><td>Tipo de campo de la geodatabase Esri. Ver tabla de Field types.</td></tr>
+            <tr><td>bind::esri:fieldLength</td><td>Longitud máxima para campos de texto. Por defecto: 255.</td></tr>
+            <tr><td>bind::esri:fieldAlias</td><td>Nombre amigable del campo en la tabla de atributos de ArcGIS Online. Diferente del <code>name</code> y del <code>label</code>.</td></tr>
+            <tr><td>bind::esri:parameters</td><td>Parámetros Esri adicionales para comportamientos especiales (GPS, workflows).</td></tr>
+            <tr><td>bind::esri:warning</td><td>Expresión que activa una advertencia (no bloquea el envío, a diferencia de <code>constraint</code>).</td></tr>
+            <tr><td>bind::esri:warning_message</td><td>Texto de la advertencia.</td></tr>
+            <tr><td>bind::saveIncomplete</td><td><code>true</code> permite guardar automáticamente formularios incompletos en el dispositivo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Tipos de campo Esri (bind::esri:fieldType)</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>esriFieldType</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>esriFieldTypeString</td><td>Texto (cadena de caracteres)</td></tr>
+            <tr><td>esriFieldTypeInteger</td><td>Número entero</td></tr>
+            <tr><td>esriFieldTypeSmallInteger</td><td>Entero pequeño (−32,768 a 32,767)</td></tr>
+            <tr><td>esriFieldTypeBigInteger</td><td>Entero grande</td></tr>
+            <tr><td>esriFieldTypeSingle</td><td>Flotante de precisión simple</td></tr>
+            <tr><td>esriFieldTypeDouble</td><td>Flotante de doble precisión (recomendado para medidas dasométricas)</td></tr>
+            <tr><td>esriFieldTypeDate</td><td>Fecha y hora</td></tr>
+            <tr><td>esriFieldTypeDateOnly</td><td>Solo fecha</td></tr>
+            <tr><td>esriFieldTypeTimeOnly</td><td>Solo hora</td></tr>
+            <tr><td>esriFieldTypeGUID</td><td>Identificador único global</td></tr>
+            <tr><td>esriFieldTypePointZ</td><td>Geopoint con soporte de eje Z (elevación)</td></tr>
+            <tr><td>null</td><td>El campo no crea columna en el Feature Layer</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ BODY ═══ -->
+    <div class="section" id="col-body">
+      <h2>Columnas <code>body::</code></h2>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>body::esri:style</td><td>Estilos CSS aplicados al elemento en la Web App.</td></tr>
+            <tr><td>body::accept</td><td>Solo para el tipo <code>file</code>. Define los tipos de archivo permitidos: <code>image/*</code>, <code>application/pdf</code>, <code>.pdf,.docx</code>.</td></tr>
+            <tr><td>body::esri:visible</td><td>Controla la visibilidad del elemento.</td></tr>
+            <tr><td>body::esri:inputMask</td><td>Máscara de entrada para campos de texto. Ej: <code>999-9999</code> para teléfono.</td></tr>
+            <tr><td>body::accuracyThreshold</td><td>Umbral de precisión GPS (metros). El geopoint solo se puede guardar cuando el dispositivo alcanza esa precisión. Muy útil con receptores externos como el Trimble TDC6.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">→</span>
+        <div>Para un inventario arbóreo con Trimble TDC6, un valor de <code>0.30</code> en <code>body::accuracyThreshold</code> garantiza que solo se acepten coordenadas con precisión submétrica.</div>
+      </div>
+    </div>
+
+    <!-- ═══ IDIOMA ═══ -->
+    <div class="section" id="col-idioma">
+      <h2>Columnas de idioma adicional</h2>
+      <p>Las columnas con el sufijo <code>::language (xx)</code> permiten agregar traducciones del texto a un idioma adicional: <code>label::English (en)</code>, <code>hint::English (en)</code>, etc. El idioma adicional se configura en la hoja <code>settings</code>.</p>
+      <div class="callout info">
+        <span class="callout-icon">ℹ</span>
+        <div>Si el formulario es solo en español, estas columnas se dejan vacías. No es necesario eliminarlas.</div>
+      </div>
+    </div>
+
+    <!-- ═══ CHOICES ═══ -->
+    <div class="section" id="choices">
+      <div class="section-num">04 · Hoja choices</div>
+      <h2>Listas de opciones</h2>
+      <p>Contiene todas las listas de opciones para preguntas <code>select_one</code> y <code>select_multiple</code>. Cada opción es una fila. Las opciones se agrupan por <code>list_name</code>.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>list_name</td><td>Nombre de la lista. Todas las filas con el mismo <code>list_name</code> forman una lista. Este nombre se usa en la columna <code>type</code> de survey.</td></tr>
+            <tr><td>name</td><td>Valor interno que se almacena en la base de datos. Mismas reglas que el <code>name</code> de survey: sin espacios, sin caracteres especiales.</td></tr>
+            <tr><td>label</td><td>Texto visible al usuario. Puede tener tildes, espacios y mayúsculas.</td></tr>
+            <tr><td>media::audio</td><td>Nombre de archivo de audio asociado a la opción.</td></tr>
+            <tr><td>media::image</td><td>Imagen que se muestra junto al texto de la opción.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Ejemplo: lista de especies forestales</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>list_name</th><th>name</th><th>label</th></tr></thead>
+          <tbody>
+            <tr><td>especies_forestales</td><td>tectona</td><td>Tectona grandis (Teca)</td></tr>
+            <tr><td>especies_forestales</td><td>gmelina</td><td>Gmelina arborea (Melina)</td></tr>
+            <tr><td>especies_forestales</td><td>cedrela</td><td>Cedrela odorata (Cedro)</td></tr>
+            <tr><td>especies_forestales</td><td>pinus</td><td>Pinus oocarpa (Pino)</td></tr>
+            <tr><td>especies_forestales</td><td>otro</td><td>Otra especie</td></tr>
+            <tr><td>estado_fitosanitario</td><td>excelente</td><td>Excelente</td></tr>
+            <tr><td>estado_fitosanitario</td><td>bueno</td><td>Bueno</td></tr>
+            <tr><td>estado_fitosanitario</td><td>regular</td><td>Regular</td></tr>
+            <tr><td>estado_fitosanitario</td><td>malo</td><td>Malo</td></tr>
+            <tr><td>estado_fitosanitario</td><td>muerto</td><td>Muerto</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">→</span>
+        <div>Si la lista tiene más de 50 opciones, usar <code>select_one_from_file</code> con un CSV externo y <code>appearance = autocomplete</code> para permitir búsqueda por texto.</div>
+      </div>
+    </div>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <div class="section" id="settings">
+      <div class="section-num">05 · Hoja settings</div>
+      <h2>Configuración general del formulario</h2>
+      <p>Contiene una sola fila con la configuración global. Es la primera hoja que se debe completar.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td>form_title</td><td>Nombre visible del formulario en Survey123. Ej: <em>Inventario Arbóreo UNA 2025</em></td></tr>
+            <tr><td>form_id</td><td>Identificador único sin espacios. Se usa como nombre del Feature Layer. Ej: <code>inventario_arboreo_una_2025</code></td></tr>
+            <tr><td>instance_name</td><td>Expresión XPath que genera el nombre de cada registro. Ej: <code>concat(${finca}, '-', ${parcela_id}, '-', ${id_arbol})</code></td></tr>
+            <tr><td>submission_url</td><td>URL del endpoint de envío. Normalmente vacío; Survey123 lo configura al publicar.</td></tr>
+            <tr><td>default_language</td><td>Idioma por defecto. Ej: <code>Spanish (es)</code></td></tr>
+            <tr><td>version</td><td>Número de versión. Formato recomendado: <code>YYYY-MM-DD</code>. Survey123 lo usa para detectar actualizaciones.</td></tr>
+            <tr><td>style</td><td>Vacío: todas las preguntas en una pantalla. <code>pages</code>: divide el formulario en páginas (grupos con <code>field-list</code>).</td></tr>
+            <tr><td>namespaces</td><td>No modificar. Contiene el namespace de Esri requerido para las funcionalidades específicas de Survey123.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ GRUPOS Y REPEATS ═══ -->
+    <div class="section" id="grupos">
+      <div class="section-num">06 · Lógica avanzada</div>
+      <h2>Grupos y repeticiones</h2>
+
+      <h3>begin group / end group</h3>
+      <p>Todo lo que esté entre <code>begin group</code> y <code>end group</code> pertenece a ese grupo. Se usan para:</p>
+      <ul class="doc-list">
+        <li>Organizar el formulario en secciones lógicas temáticas</li>
+        <li>Aplicar <code>relevant</code> a todo el grupo (mostrar u ocultar secciones completas)</li>
+        <li>Con <code>style = pages</code>, cada grupo con <code>appearance = field-list</code> se convierte en una página</li>
+        <li>Usar <code>appearance = table-list</code> para preguntas relacionadas en formato tabla</li>
+      </ul>
+
+      <h3>begin repeat / end repeat</h3>
+      <p>Fundamental para inventarios forestales. Permite registrar múltiples árboles por formulario sin necesidad de abrirlo una vez por árbol. El colector completa la información de parcela una sola vez y repite el bloque de árbol las veces necesarias.</p>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠</span>
+        <div><strong>Dato importante</strong> Cada repetición se almacena en una tabla relacionada (relación 1:N) respecto al registro principal. Esto requiere diseño previo del esquema del Feature Service en ArcGIS Online.</div>
+      </div>
+    </div>
+
+    <!-- ═══ XPATH / PULLDATA ═══ -->
+    <div class="section" id="xpath">
+      <h2>XPath y la función <code>pulldata()</code></h2>
+      <p>XPath es el lenguaje de expresiones que Survey123 usa en <code>calculation</code>, <code>constraint</code>, <code>relevant</code>, <code>required</code> y <code>default</code>.</p>
+
+      <h4>Principios básicos</h4>
+      <ul class="doc-list">
+        <li>Referenciar otro campo: <code>${nombre_del_campo}</code></li>
+        <li>Referenciar el valor propio (en constraint): <code>.</code> (punto solo)</li>
+        <li>Texto en comparaciones entre comillas simples: <code>${especie} = 'teca'</code></li>
+        <li>Números sin comillas: <code>${dap_cm} > 10</code></li>
+      </ul>
+
+      <h3>pulldata()</h3>
+      <p>Lee datos desde un CSV externo en la carpeta <em>media</em>. Útil para precargar información de inventarios previos, catálogos de especies o datos de parcelas.</p>
+
+      <div class="formula">pulldata('nombre_archivo', 'columna_a_retornar', 'columna_de_busqueda', ${campo_referencia})</div>
+
+      <h4>Ejemplo</h4>
+      <p>CSV <code>parcelas.csv</code> con columnas <code>id_parcela</code>, <code>area_ha</code>, <code>propietario</code>:</p>
+      <div class="formula">pulldata('parcelas', 'area_ha', 'id_parcela', ${parcela_id})</div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠</span>
+        <div><strong>Incompatibilidad conocida</strong> <code>pulldata()</code> puede tener conflictos con <code>format-number()</code> en Field App v3.18+. Usar <code>round()</code> en su lugar para formatear el resultado numérico de un <code>pulldata()</code>.</div>
+      </div>
+    </div>
+
+    <!-- ═══ HTML ═══ -->
+    <div class="section" id="html">
+      <h2>HTML en labels y notas</h2>
+      <p>Survey123 permite usar etiquetas HTML básicas en las columnas <code>label</code>, <code>hint</code> y en preguntas de tipo <code>note</code>.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Etiqueta</th><th>Efecto</th></tr></thead>
+          <tbody>
+            <tr><td>&lt;b&gt;texto&lt;/b&gt;</td><td>Negritas</td></tr>
+            <tr><td>&lt;i&gt;texto&lt;/i&gt;</td><td>Cursiva</td></tr>
+            <tr><td>&lt;u&gt;texto&lt;/u&gt;</td><td>Subrayado</td></tr>
+            <tr><td>&lt;h1&gt;...&lt;h6&gt;</td><td>Encabezados de diferentes tamaños</td></tr>
+            <tr><td>&lt;font color='red'&gt;</td><td>Color de texto</td></tr>
+            <tr><td>&lt;img src='nombre.png' width='300'&gt;</td><td>Imagen de referencia (debe estar en la carpeta <em>media</em>)</td></tr>
+            <tr><td>&lt;a href='https://...'&gt;</td><td>Hipervínculo (solo Web App)</td></tr>
+            <tr><td>&lt;table&gt;, &lt;tr&gt;, &lt;td&gt;</td><td>Tablas HTML en notas (Web App)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ FLUJO DE TRABAJO ═══ -->
+    <div class="section" id="flujo">
+      <div class="section-num">07 · Referencia</div>
+      <h2>Flujo de trabajo paso a paso</h2>
+
+      <div class="steps">
+        <div class="step"><div class="step-num">01</div><div class="step-body"><h4>Planificar el formulario</h4><p>Definir en papel qué datos capturar: secciones, preguntas, tipos de dato, campos obligatorios, validaciones y listas de opciones necesarias.</p></div></div>
+        <div class="step"><div class="step-num">02</div><div class="step-body"><h4>Configurar la hoja settings</h4><p>Completar: <code>form_title</code>, <code>form_id</code>, <code>instance_name</code>, <code>version</code> y <code>style</code>.</p></div></div>
+        <div class="step"><div class="step-num">03</div><div class="step-body"><h4>Crear las listas en choices</h4><p>Definir todas las listas de opciones. Una lista por cada pregunta de selección. Verificar que los <code>name</code> no tengan espacios ni caracteres especiales.</p></div></div>
+        <div class="step"><div class="step-num">04</div><div class="step-body"><h4>Construir el formulario en survey</h4><p>Agregar campos de control (<code>start</code>, <code>end</code>, <code>username</code>), luego los grupos y dentro de ellos las preguntas.</p></div></div>
+        <div class="step"><div class="step-num">05</div><div class="step-body"><h4>Agregar validaciones y lógica</h4><p>Revisar campos obligatorios (<code>required</code>), rangos (<code>constraint</code>), visibilidad condicional (<code>relevant</code>) y cálculos automáticos (<code>calculate</code>).</p></div></div>
+        <div class="step"><div class="step-num">06</div><div class="step-body"><h4>Guardar el archivo</h4><p>Guardar en formato <code>.xlsx</code>. Survey123 Connect acepta ambos (<code>.xlsx</code> y <code>.xlsm</code>), pero <code>.xlsx</code> es más compatible.</p></div></div>
+        <div class="step"><div class="step-num">07</div><div class="step-body"><h4>Importar en Survey123 Connect</h4><p><em>New Survey → File</em>. Survey123 lee la plantilla y muestra una vista previa del formulario. Revisar el panel de errores.</p></div></div>
+        <div class="step"><div class="step-num">08</div><div class="step-body"><h4>Revisar y corregir errores</h4><p>Los errores más comunes: <code>name</code>s duplicados, apariencias incompatibles con el tipo de pregunta, referencias a listas inexistentes, expresiones XPath mal escritas.</p></div></div>
+        <div class="step"><div class="step-num">09</div><div class="step-body"><h4>Publicar</h4><p>Clic en <em>Publish</em>. Survey123 crea automáticamente un Feature Layer en ArcGIS Online con el esquema definido. El formulario queda disponible para descargarse en dispositivos de campo.</p></div></div>
+        <div class="step"><div class="step-num">10</div><div class="step-body"><h4>Actualizar versiones</h4><p>Editar el <code>.xlsx</code>, incrementar <code>version</code> en settings, y volver a importar y publicar. Survey123 detecta la nueva versión y actualiza en todos los dispositivos.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ ERRORES ═══ -->
+    <div class="section" id="errores">
+      <h2>Errores comunes y soluciones</h2>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Error / Síntoma</th><th>Causa y solución</th></tr></thead>
+          <tbody>
+            <tr><td>"Undefined field"</td><td>El campo referenciado en <code>${...}</code> no existe en la columna <code>name</code>. Verificar ortografía exacta (distingue mayúsculas).</td></tr>
+            <tr><td>Lista de opciones vacía</td><td>El <code>list_name</code> en choices no coincide exactamente con el usado en <code>type</code>. Deben ser idénticos.</td></tr>
+            <tr><td>Appearance inválida</td><td>La apariencia no es compatible con el tipo de pregunta. Consultar la hoja Appearances del template.</td></tr>
+            <tr><td>Name con caracteres especiales</td><td>El <code>name</code> tiene espacios, tildes o guiones medios. Cambiar todo a guion bajo (<code>_</code>).</td></tr>
+            <tr><td>Error al publicar</td><td>El <code>form_id</code> tiene espacios. Cambiar a un identificador simple sin espacios.</td></tr>
+            <tr><td>pulldata() retorna vacío</td><td>El CSV no está en la carpeta <em>media</em>, o el nombre del archivo en la función no coincide exactamente.</td></tr>
+            <tr><td>format-number() con pulldata() falla</td><td>Incompatibilidad conocida en Field App. Usar <code>round()</code> en lugar de <code>format-number()</code>.</td></tr>
+            <tr><td>GPS no captura</td><td>La aplicación no tiene permisos de ubicación en el dispositivo. Verificar permisos del sistema.</td></tr>
+            <tr><td>accuracyThreshold bloquea el GPS</td><td>El umbral es muy estricto para el entorno (dosel cerrado). Ajustar a 1.0 m o 2.0 m según condiciones.</td></tr>
+            <tr><td>Repeat no guarda todas las filas</td><td>El <code>begin repeat</code> no tiene su <code>end repeat</code> correspondiente, o hay inconsistencia en los niveles de agrupación.</td></tr>
+            <tr><td>calculate no actualiza su valor</td><td>Depende de campos que aún no tienen respuesta. Agregar <code>relevant</code> para que solo calcule cuando los campos dependientes estén llenos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ EJEMPLO ═══ -->
+    <div class="section" id="ejemplo">
+      <h2>Ejemplo práctico: inventario arbóreo</h2>
+      <p>Estructura de un formulario con información de parcela y datos de cada árbol:</p>
+      <ul class="doc-list">
+        <li>Campos de control: <code>start</code>, <code>end</code>, <code>username</code>, <code>deviceid</code></li>
+        <li>Sección 1 — Datos de la parcela: fecha, código, finca, coordenadas del centro</li>
+        <li>Sección 2 — Datos de cada árbol (bloque repeat): número de árbol, especie, DAP, altura, área basal calculada, estado fitosanitario, fotografía, ubicación GPS, observaciones</li>
+      </ul>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>type</th><th>name</th><th>label</th><th>required</th><th>appearance</th><th>calculation / constraint</th></tr></thead>
+          <tbody>
+            <tr><td>start</td><td>inicio</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>end</td><td>fin</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>username</td><td>responsable</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>begin group</td><td>datos_parcela</td><td>Sección 1: Datos de la Parcela</td><td></td><td>field-list</td><td></td></tr>
+            <tr><td>date</td><td>fecha_levantamiento</td><td>Fecha del levantamiento</td><td>yes</td><td></td><td>default: today()</td></tr>
+            <tr><td>text</td><td>id_parcela</td><td>Código de la parcela</td><td>yes</td><td></td><td></td></tr>
+            <tr><td>select_one fincas</td><td>finca</td><td>Nombre de la finca</td><td>yes</td><td>minimal</td><td></td></tr>
+            <tr><td>geopoint</td><td>coord_parcela</td><td>Coordenadas del centro</td><td>yes</td><td>press-to-locate</td><td></td></tr>
+            <tr><td>end group</td><td>datos_parcela</td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>begin repeat</td><td>arbol</td><td>Datos de cada árbol</td><td></td><td></td><td></td></tr>
+            <tr><td>integer</td><td>num_arbol</td><td>Número del árbol</td><td>yes</td><td>spinner</td><td></td></tr>
+            <tr><td>select_one especies</td><td>especie</td><td>Especie forestal</td><td>yes</td><td>autocomplete</td><td></td></tr>
+            <tr><td>decimal</td><td>dap_cm</td><td>DAP (cm)</td><td>yes</td><td></td><td>constraint: . >= 5 and . &lt;= 300</td></tr>
+            <tr><td>decimal</td><td>altura_m</td><td>Altura total (m)</td><td>yes</td><td></td><td>constraint: . >= 1 and . &lt;= 80</td></tr>
+            <tr><td>calculate</td><td>area_basal</td><td></td><td></td><td></td><td>3.14159 * (${dap_cm} div 100 div 2) * (${dap_cm} div 100 div 2)</td></tr>
+            <tr><td>select_one estado_fitosanit</td><td>estado</td><td>Estado fitosanitario</td><td>yes</td><td>minimal</td><td></td></tr>
+            <tr><td>image</td><td>foto</td><td>Fotografía del árbol</td><td>no</td><td>new-rear</td><td></td></tr>
+            <tr><td>geopoint</td><td>coord_arbol</td><td>Ubicación GPS del árbol</td><td>yes</td><td>press-to-locate</td><td></td></tr>
+            <tr><td>text</td><td>observaciones</td><td>Observaciones</td><td>no</td><td>multiline</td><td></td></tr>
+            <tr><td>end repeat</td><td>arbol</td><td></td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ BUENAS PRÁCTICAS ═══ -->
+    <div class="section" id="buenas-practicas">
+      <h2>Buenas prácticas</h2>
+
+      <h3>Nomenclatura de campos</h3>
+      <ul class="doc-list">
+        <li>Nombres descriptivos y cortos, sin tildes.</li>
+        <li>Incluir la unidad en el nombre: <code>dap_cm</code>, <code>altura_m</code>, <code>peso_kg</code>.</li>
+        <li>Evitar nombres genéricos como <code>campo1</code> o <code>dato2</code>.</li>
+      </ul>
+
+      <h3>Calidad de datos</h3>
+      <ul class="doc-list">
+        <li>Aplicar <code>constraint</code> con rangos realistas para todos los campos numéricos dasométricos.</li>
+        <li>Usar <code>required = yes</code> en todos los campos que forman la llave primaria del registro.</li>
+        <li>Usar <code>bind::esri:warning</code> (no <code>constraint</code>) para valores inusuales pero posibles.</li>
+        <li>Incluir siempre un campo de observaciones de texto libre para situaciones no previstas.</li>
+      </ul>
+
+      <h3>Usabilidad en campo</h3>
+      <ul class="doc-list">
+        <li>Usar <code>minimal</code> para listas largas y <code>autocomplete</code> para catálogos de más de 20 opciones.</li>
+        <li>Organizar en páginas (<code>style = pages</code>) para evitar scroll excesivo.</li>
+        <li>Agregar notas (<code>type = note</code>) con instrucciones de protocolo entre secciones.</li>
+        <li>Configurar <code>default = today()</code> en el campo de fecha para agilizar la captura.</li>
+      </ul>
+
+      <h3>Control de versiones</h3>
+      <ul class="doc-list">
+        <li>Incrementar <code>version</code> en settings antes de cada publicación.</li>
+        <li>Guardar el <code>.xlsx</code> con la fecha en el nombre: <code>inventario_arboreo_2025-01-15.xlsx</code>.</li>
+      </ul>
+
+      <h3>Compatibilidad Field App vs Web App</h3>
+      <p>Las siguientes funciones <strong>no están disponibles en la Web App</strong>:</p>
+      <ul class="doc-list">
+        <li><code>week-number</code> (date)</li>
+        <li><code>distress</code>, <code>spinner</code>, <code>numbers</code>, <code>calculator</code> para integer/decimal</li>
+        <li><code>rangefinder</code> (requiere hardware adicional)</li>
+        <li><code>deviceid</code></li>
+      </ul>
+    </div>
+
+    <!-- ═══ GLOSARIO ═══ -->
+    <div class="section" id="glosario">
+      <h2>Glosario</h2>
+
+      <div class="glosario-item"><div class="glosario-term">XLSForm</div><div>Estándar abierto para definir formularios de recopilación de datos en hojas de cálculo Excel. Es el formato base de esta plantilla.</div></div>
+      <div class="glosario-item"><div class="glosario-term">Survey123 Connect</div><div>Aplicación de escritorio de Esri para diseñar, probar y publicar formularios XLSForm en la plataforma ArcGIS.</div></div>
+      <div class="glosario-item"><div class="glosario-term">Feature Layer</div><div>Capa de datos geográficos en ArcGIS Online donde se almacenan los registros enviados desde el formulario.</div></div>
+      <div class="glosario-item"><div class="glosario-term">XPath</div><div>Lenguaje de consulta y expresión usado en Survey123 para referenciar campos, hacer cálculos y definir condiciones.</div></div>
+      <div class="glosario-item"><div class="glosario-term">Cascading select</div><div>Técnica donde una lista de opciones se filtra según la respuesta de otra pregunta anterior. Requiere <code>choice_filter</code> en survey y atributos adicionales en choices.</div></div>
+      <div class="glosario-item"><div class="glosario-term">Repeat</div><div>Bloque de preguntas que puede repetirse N veces. Los datos se almacenan en una tabla relacionada (relación 1:N) en el Feature Service.</div></div>
+      <div class="glosario-item"><div class="glosario-term">esriFieldType</div><div>Tipos de campo de la geodatabase de Esri que definen cómo se almacenan los datos en el Feature Layer.</div></div>
+      <div class="glosario-item"><div class="glosario-term">pulldata()</div><div>Función XPath que extrae un valor de un archivo CSV externo basándose en una clave de búsqueda.</div></div>
+      <div class="glosario-item"><div class="glosario-term">geopoint</div><div>Tipo de pregunta que captura coordenadas geográficas (latitud, longitud, altitud) desde el GPS del dispositivo o receptor externo.</div></div>
+      <div class="glosario-item"><div class="glosario-term">bind::</div><div>Prefijo de columnas que conectan la pregunta con el esquema de almacenamiento del Feature Layer.</div></div>
+      <div class="glosario-item"><div class="glosario-term">body::</div><div>Prefijo de columnas que controlan la presentación visual del elemento en la pantalla del formulario.</div></div>
+      <div class="glosario-item"><div class="glosario-term">constraint</div><div>Expresión XPath que valida el valor ingresado. Si no se cumple, bloquea el envío del registro.</div></div>
+      <div class="glosario-item"><div class="glosario-term">relevant</div><div>Expresión XPath que controla si una pregunta se muestra o se oculta dinámicamente según respuestas anteriores.</div></div>
+      <div class="glosario-item"><div class="glosario-term">accuracyThreshold</div><div>Umbral de precisión GPS (en metros) que el dispositivo debe alcanzar para permitir la captura de coordenadas.</div></div>
+      <div class="glosario-item"><div class="glosario-term">media folder</div><div>Carpeta del formulario donde se almacenan archivos de referencia (imágenes, audio, CSV) utilizados en la plantilla.</div></div>
+      <div class="glosario-item"><div class="glosario-term">instance_name</div><div>Expresión XPath que genera el nombre de cada registro enviado. Facilita identificar los envíos en ArcGIS Online.</div></div>
+      <div class="glosario-item"><div class="glosario-term">pages (style)</div><div>Modo de navegación del formulario donde cada grupo con <code>field-list</code> se muestra en una página separada.</div></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- FOOTER -->
+<div id="footer">
+  <p>Manual XLSForm Advanced v3.25 — ArcGIS Survey123 Connect</p>
+  <p>Escuela de Ciencias Ambientales — Universidad Nacional de Costa Rica</p>
+</div>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('#nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const id = e.target.id;
+        const active = document.querySelector(`#nav a[href="#${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -75% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Close nav on mobile after click
+  navLinks.forEach(l => {
+    l.addEventListener('click', () => {
+      document.getElementById('nav').classList.remove('open');
+    });
+  });
+</script>
+</body>
+</html>
